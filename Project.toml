@@ -1,0 +1,13 @@
+name = "ML101"
+uuid = "b0b50a70-6b0f-492e-b104-132aeb0f18c0"
+authors = ["JingYu Ning <foldfelis@gmail.com> and contributors"]
+version = "0.1.0"
+
+[compat]
+julia = "1.5.3"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
