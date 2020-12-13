@@ -3,6 +3,10 @@ uuid = "b0b50a70-6b0f-492e-b104-132aeb0f18c0"
 authors = ["JingYu Ning <foldfelis@gmail.com> and contributors"]
 version = "0.1.0"
 
+[deps]
+MLJ = "add582a8-e3ab-11e8-2d5e-e98b27df1bc7"
+RDatasets = "ce6b1742-4840-55fa-b093-852dadbb1d8b"
+
 [compat]
 julia = "1.5.3"
 
