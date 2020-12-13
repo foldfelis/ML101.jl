@@ -16,7 +16,7 @@ This repository is not just an implement yet a learning process to fully underst
 
 ## Learning to Answer Yes/No
 
-- [x] Perceptron Learning Algorithm (PLA)
+- [ ] Perceptron Learning Algorithm (PLA)
 - [ ] Pocket Algorithm
 
 ## Types of Learning
@@ -32,3 +32,55 @@ This repository is not just an implement yet a learning process to fully underst
 ## The VC Dimension
 
 ## Noise and Error
+
+---
+
+## Linear Regression
+
+## Logistic Regression
+
+## Linear Models for Classification
+
+## Nonlinear Transformation
+
+## Hazard of Overfitting
+
+## Regularization
+
+## Validation
+
+## Three Learning Principles
+
+---
+
+## Linear Support Vector Machine
+
+## Dual Support Vector Machine
+
+## Kernel Support Vector Machine
+
+## Kernel Logistic Regression
+
+## Support Vector Regression
+
+## Blending and Bagging
+
+## Adaptive Boosting
+
+## Decision Tree
+- [ ] By MLJ
+- [ ] Implementation
+
+## Random Forest
+
+## Gradient Boosted Decision Tree
+
+## Neural Network
+
+## Deep Learning
+
+## Radial Basis Function Network
+
+## Matrix Factorization
+
+## Finale
