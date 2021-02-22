@@ -1,4 +1,4 @@
-@testset "linear_regression.jl function g" begin
+@testset "linear_regression.jl internal function" begin
     # Ŷ = 0.3 x₁ + 0.6 X₂ + 0.9 x₃
     x₁ = collect(1:10)
     x₂ = collect(11:20)
@@ -10,6 +10,7 @@
     lrm = LinearRegressionModel(df, :Ŷ, [:X₁, :X₂, :X₃], [0.1, 0.3, 0.5, 0.7])
 
     @test ML101.g(lrm, collect(df[1, [:X₁, :X₂, :X₃]])) == 0.1 + 0.3*1 + 0.5*11 + 0.7*21
+    @test ML101.loss(lrm) == 0
 end
 
 @testset "linear_regression.jl" begin

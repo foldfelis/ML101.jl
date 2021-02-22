@@ -29,6 +29,17 @@ function g(model::LinearRegressionModel, xs::Vector{<:Real})
     return y
 end
 
-function fit!(model::LinearRegressionModel; atol::Float64=1e-6)
+function loss(model::LinearRegressionModel)
+    l = 0
+    for i in 1:nrow(model.df)
+        l += (g(model, collect(model.df[i, model.features])) - model.df[i, model.label])^2
+    end
 
+    return l
 end
+
+# function fit!(model::LinearRegressionModel; lr=1e-3, atol::Float64=1e-6)
+#     argv = model.argv
+
+#     argv[1] = ar
+# end
