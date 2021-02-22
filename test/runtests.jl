@@ -2,5 +2,7 @@ using ML101
 using Test
 
 @testset "ML101.jl" begin
-    # Write your tests here.
+
+    include("linear_regression.jl")
+
 end
