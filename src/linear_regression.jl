@@ -28,3 +28,7 @@ function g(model::LinearRegressionModel, xs::Vector{<:Real})
 
     return y
 end
+
+function fit!(model::LinearRegressionModel; atol::Float64=1e-6)
+
+end
