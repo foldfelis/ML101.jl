@@ -19,12 +19,8 @@ function LinearRegressionModel(df::DataFrame; label::Symbol, features::Vector{Sy
 end
 
 function g(model::LinearRegressionModel, xs::Vector{<:Real})
-    argv = model.argv
-
-    y = argv[1]
-    for (a, x) in zip(argv[2:end], xs)
-        y += a * x
-    end
+    pushfirst!(xs, 1)
+    y = sum(model.argv .* xs)
 
     return y
 end
@@ -39,7 +35,9 @@ function loss(model::LinearRegressionModel)
 end
 
 # function fit!(model::LinearRegressionModel; lr=1e-3, atol::Float64=1e-6)
-#     argv = model.argv
-
-#     argv[1] = ar
+#     while loss(model) > atol
+#         # intersection
+#         model.argv[1] -= 2 *
+#         # slopes
+#     end
 # end
