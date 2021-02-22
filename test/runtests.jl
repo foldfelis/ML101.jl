@@ -1,6 +1,10 @@
 using ML101
 using Test
 
+using DataFrames
+
 @testset "ML101.jl" begin
-    # Write your tests here.
+
+    include("linear_regression.jl")
+
 end
