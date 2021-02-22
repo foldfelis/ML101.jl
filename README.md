@@ -1,5 +1,8 @@
 # ML101
 
+[![CI](https://github.com/foldfelis/ML101.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/foldfelis/ML101.jl/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/foldfelis/ML101.jl/branch/master/graph/badge.svg?token=1VPUODP01Z)](https://codecov.io/gh/foldfelis/ML101.jl)
+
 This repository is not just an implement yet a learning process to fully understand the ML models. In this reop, I implement some common and useful algorithms and some examples.
 
 ## Reference
