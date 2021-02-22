@@ -1,6 +1,7 @@
 export
     LinearRegressionModel,
-    fit!
+    fit!,
+    predict
 
 mutable struct LinearRegressionModel
     df::DataFrame
@@ -27,16 +28,18 @@ function g(model::LinearRegressionModel, row_n::Int64)
 end
 
 function loss(model::LinearRegressionModel)
+    n = nrow(model.df)
     l = 0
-    for i in 1:nrow(model.df)
+    for i in 1:n
         l += (g(model, i) - model.df[i, model.label])^2
     end
 
-    return l
+    return l/n
 end
 
-function fit!(model::LinearRegressionModel; lr=1e-4, atol::Float64=1e-6)
-    while loss(model) > atol
+function fit!(model::LinearRegressionModel; lr=1e-4, atol::Float64=1e-6, show=false)
+    while (l = loss(model)) > atol
+        show && println("Loss: $l")
         dl_da = 0
         dl_db = zeros(length(model.features))
         for i in 1:nrow(model.df)
@@ -56,4 +59,11 @@ function fit!(model::LinearRegressionModel; lr=1e-4, atol::Float64=1e-6)
             model.argv[j] -= lr * 2 * dl_db[j-1]
         end
     end
+end
+
+function predict(model::LinearRegressionModel, xs::Vector{<:Real})
+    pushfirst!(xs, 1)
+    y = sum(model.argv .* xs)
+
+    return y
 end
