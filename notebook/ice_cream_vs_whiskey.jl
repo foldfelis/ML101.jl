@@ -4,6 +4,12 @@
 using Markdown
 using InteractiveUtils
 
+# ╔═╡ 51259b56-7567-11eb-16e3-63b248b060cd
+begin
+	using PlutoUI
+	LocalResource("./assets/ice_cream_vs_whiskey.png")
+end
+
 # ╔═╡ abde3380-750f-11eb-119b-5dc493c19b15
 begin
 	using ML101
@@ -19,7 +25,9 @@ end;
 md"
 # Linear Regression Analysis
 
-**Ice cream vs Whiskey**
+#### Ice cream vs Whiskey
+
+JingYu Ning
 "
 
 # ╔═╡ 9d2bad86-755a-11eb-1ac8-297ba703a65d
@@ -29,8 +37,8 @@ md"
 
 # ╔═╡ da1eaa04-750f-11eb-185c-c11c2c913513
 begin
-	df = CSV.read("../data/ice_cream_vs_whiskey_trends.csv", DataFrame)
-	df
+	raw = CSV.read("../data/ice_cream_vs_whiskey_trends.csv", DataFrame)
+	raw
 end
 
 # ╔═╡ c67bb8fc-755a-11eb-3338-a9cea1251f3c
@@ -40,14 +48,14 @@ md"
 
 # ╔═╡ 31120810-7510-11eb-36ec-db5fc38cbf89
 begin
-	@df df plot(:Date, :IceCreamT, label="Ice Cream", lw=2)
-	@df df plot!(:Date, :WhiskeyT, label="Whiskey", lw=2)
+	@df raw plot(:Date, :IceCreamT, label="Ice Cream", lw=2)
+	@df raw plot!(:Date, :WhiskeyT, label="Whiskey", lw=2)
 	plot!(
 		title="Trends",
 		xlabel="Date",
 		ylabel="Percentage",
-		xlims=(df.Date[1]-Month(2), df.Date[end]+Month(2)),
-		xticks=collect(df.Date[1]:Month(6):df.Date[end]+Week(1)),
+		xlims=(raw.Date[1]-Month(2), raw.Date[end]+Month(2)),
+		xticks=collect(raw.Date[1]:Month(6):raw.Date[end]+Week(1)),
 		size=(650, 400)
 	)
 end
@@ -59,6 +67,7 @@ md"
 
 # ╔═╡ e932d9fa-7513-11eb-1a99-5963f9568df3
 begin
+	df = copy(raw)
 	function gen_temp_index(date::Date)
 		if Month(date) == Month(1)
 			temp_index = abs(date - Date(Year(date).value, 1, 15))
@@ -147,6 +156,7 @@ end
 
 # ╔═╡ Cell order:
 # ╟─62b389c8-755a-11eb-3c5e-0f650123135c
+# ╟─51259b56-7567-11eb-16e3-63b248b060cd
 # ╟─abde3380-750f-11eb-119b-5dc493c19b15
 # ╟─9d2bad86-755a-11eb-1ac8-297ba703a65d
 # ╟─da1eaa04-750f-11eb-185c-c11c2c913513
@@ -157,4 +167,4 @@ end
 # ╟─8f52c950-755b-11eb-0256-9767e13d82f4
 # ╟─a6adc136-755b-11eb-1a70-bd9f483b1bcf
 # ╠═7a4cc232-7564-11eb-3cfb-b727d76a46f5
-# ╠═a158c064-7560-11eb-3a9c-c77cab156802
+# ╟─a158c064-7560-11eb-3a9c-c77cab156802
