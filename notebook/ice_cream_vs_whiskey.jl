@@ -87,7 +87,7 @@ begin
 	end
 	
 	df.TempIndex = map(gen_temp_index, df.Date) ./ 182.5
-	df.IsTempInc = map(gen_is_temp_inc, df.Date) ./ 182.5
+	df.IsTempInc = map(gen_is_temp_inc, df.Date)
 	df[!, :IceCreamT] = df.IceCreamT ./ 100
 	df[!, :WhiskeyT] = df.WhiskeyT ./ 100
 	df
