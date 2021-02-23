@@ -13,8 +13,8 @@ PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 StatsPlots = "f3b207a7-027a-5e70-b257-86293d7955fd"
 
 [compat]
+Plots = "1.10"
 StatsPlots = "0.14"
-
 PlutoUI = "0.7"
 Pluto = "0.12"
 DataFrames = "0.22"
