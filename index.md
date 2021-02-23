@@ -8,4 +8,4 @@
 
 ## Example
 
-* [Ice cream vs Whiskey](notebook/ice_cream_vs_whiskey.jl.html)
+[Ice cream vs Whiskey](notebook/ice_cream_vs_whiskey.jl.html)
