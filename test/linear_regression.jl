@@ -26,4 +26,5 @@ end
     fit!(lrm)
 
     @test all(isapprox.(lrm.argv, [0.1, 0.3, 0.5, 0.7], atol=1e-2))
+    @test isapprox(predict(lrm, [0.1, 0.2, 0.3]), 0.1*1 + 0.3*0.1 + 0.5*0.2 + 0.7*0.3, atol=1e-2)
 end
