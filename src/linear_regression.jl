@@ -10,12 +10,60 @@ mutable struct LinearRegressionModel
     argv::Vector{Float64}
 end
 
-function LinearRegressionModel(df::DataFrame, label::Symbol, features::Vector{Symbol})
-    return LinearRegressionModel(df, label, features, rand(length(features)+1))
+"""
+LinearRegressionModel(
+    df::DataFrame,
+    label::Symbol,
+    features::Vector{Symbol};
+    argv::Vector{<:Real}
+)
+
+A multipal regression model.
+
+- `df::DataFrame`: DataFrame.
+- `label::Symbol`: Specify a valid column name of `df` as a label.
+- `features::Vector{Symbol}`: Specify some valid column name of `df` as features.
+- `argv::Vector{<:Real}`: Initial arguments.
+"""
+function LinearRegressionModel(
+    df::DataFrame,
+    label::Symbol,
+    features::Vector{Symbol};
+    argv::Vector{<:Real}=rand(length(features)+1)
+)
+    if length(argv) != length(features) + 1
+        throw(DimensionMismatch("Number of features and arguments mismatch."))
+    end
+
+    return LinearRegressionModel(df, label, features, argv)
 end
 
-function LinearRegressionModel(df::DataFrame, label::Symbol, features::Symbol)
-    return LinearRegressionModel(df, label, [features], rand(2))
+"""
+    LinearRegressionModel(
+        df::DataFrame,
+        label::Symbol,
+        features::Symbol;
+        argv::Vector{<:Real}
+    )
+
+A linear regression model.
+
+- `df::DataFrame`: DataFrame.
+- `label::Symbol`: Specify a valid column name of `df` as a label.
+- `features::Symbol`: Specify a valid column name of `df` as a feature.
+- `argv::Vector{<:Real}`: Initial arguments.
+"""
+function LinearRegressionModel(
+    df::DataFrame,
+    label::Symbol,
+    feature::Symbol;
+    argv::Vector{<:Real}=rand(2)
+)
+    if length(argv) != 2
+        throw(DimensionMismatch("Number of features and arguments mismatch."))
+    end
+
+    return LinearRegressionModel(df, label, [feature], argv)
 end
 
 function g(model::LinearRegressionModel, row_n::Int64)
