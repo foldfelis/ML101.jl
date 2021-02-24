@@ -14,7 +14,7 @@ end
 begin
 	using ML101
 	using CSV
-	using DataFrames 
+	using DataFrames
 	using Dates
 	using Plots
 	using StatsPlots
@@ -78,14 +78,14 @@ begin
 				temp_index = Date(Year(date).value+1, 1, 15) - date
 			end
 		end
-			
+
 		return temp_index.value
 	end
-	
+
 	function gen_is_temp_inc(date::Date)
 		Date(Year(date).value,1,15)<date<=Date(Year(date).value,7,15) ? true : false
 	end
-	
+
 	df.TempIndex = map(gen_temp_index, df.Date) ./ 182.5
 	df.IsTempInc = map(gen_is_temp_inc, df.Date)
 	df[!, :IceCreamT] = df.IceCreamT ./ 100
@@ -118,7 +118,7 @@ begin
 	)
 	lrm_ice_cream_temp.argv = [0.4, 0.4]
 	fit!(lrm_ice_cream_temp, lr=1e-7, atol=8e-3, show=true)
-	
+
 	lrm_whiskey_temp = LinearRegressionModel(
 		df, label=:WhiskeyT, features=[:TempIndex]
 	)
@@ -131,15 +131,15 @@ begin
 	@df df scatter(:TempIndex, :IceCreamT, label="Ice Cream")
 	@df df scatter!(:TempIndex, :WhiskeyT, label="Whiskey")
 	plot!(
-		df.TempIndex, 
-		x->predict(lrm_ice_cream_temp, [x]), 
+		df.TempIndex,
+		x->predict(lrm_ice_cream_temp, [x]),
 		label="Ice Cream Model",
 		lw=5,
 		color=ARGB(0, 0.5, 1)
 	)
 	plot!(
-		df.TempIndex, 
-		x->predict(lrm_whiskey_temp, [x]), 
+		df.TempIndex,
+		x->predict(lrm_whiskey_temp, [x]),
 		label="Whiskey Model",
 		lw=5,
 		color=ARGB(1, 0.5, 0)
