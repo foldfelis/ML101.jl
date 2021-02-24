@@ -15,7 +15,9 @@ This repository is not just an implement yet a learning process to fully underst
 
 4. [MLJ.jl](https://github.com/alan-turing-institute/MLJ.jl)
 
-5. [RDatasets.jl](https://github.com/JuliaStats/RDatasets.jl)
+5. [GLM.jl](https://github.com/JuliaStats/GLM.jl)
+
+6. [RDatasets.jl](https://github.com/JuliaStats/RDatasets.jl)
 
 ## Models
 
