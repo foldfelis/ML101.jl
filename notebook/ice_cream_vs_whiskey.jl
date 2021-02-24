@@ -113,17 +113,13 @@ end
 
 # ╔═╡ 7a4cc232-7564-11eb-3cfb-b727d76a46f5
 begin
-	lrm_ice_cream_temp = LinearRegressionModel(
-		df, label=:IceCreamT, features=[:TempIndex]
-	)
-	lrm_ice_cream_temp.argv = [0.4, 0.4]
-	fit!(lrm_ice_cream_temp, lr=1e-7, atol=8e-3, show=true)
+	ice_cream_temp = LinearRegressionModel(df, :IceCreamT, :TempIndex)
+	ice_cream_temp.argv = [0.4, 0.4]
+	fit!(ice_cream_temp, lr=1e-7, atol=8e-3)
 
-	lrm_whiskey_temp = LinearRegressionModel(
-		df, label=:WhiskeyT, features=[:TempIndex]
-	)
-	lrm_whiskey_temp.argv = [0.45, -0.1]
-	fit!(lrm_whiskey_temp, lr=1e-7, atol=6e-3, show=true)
+	whiskey_temp = LinearRegressionModel(df, :WhiskeyT, :TempIndex)
+	whiskey_temp.argv = [0.45, -0.1]
+	fit!(whiskey_temp, lr=1e-7, atol=6e-3)
 end
 
 # ╔═╡ a158c064-7560-11eb-3a9c-c77cab156802
@@ -132,14 +128,14 @@ begin
 	@df df scatter!(:TempIndex, :WhiskeyT, label="Whiskey")
 	plot!(
 		df.TempIndex,
-		x->predict(lrm_ice_cream_temp, [x]),
+		x->predict(ice_cream_temp, [x]),
 		label="Ice Cream Model",
 		lw=5,
 		color=ARGB(0, 0.5, 1)
 	)
 	plot!(
 		df.TempIndex,
-		x->predict(lrm_whiskey_temp, [x]),
+		x->predict(whiskey_temp, [x]),
 		label="Whiskey Model",
 		lw=5,
 		color=ARGB(1, 0.5, 0)
