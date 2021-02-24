@@ -10,13 +10,12 @@ mutable struct LinearRegressionModel
     argv::Vector{Float64}
 end
 
-function LinearRegressionModel(df::DataFrame; label::Symbol, features::Vector{Symbol})
-    return LinearRegressionModel(
-        df,
-        label,
-        features,
-        rand(length(features) + 1)
-    )
+function LinearRegressionModel(df::DataFrame, label::Symbol, features::Vector{Symbol})
+    return LinearRegressionModel(df, label, features, rand(length(features)+1))
+end
+
+function LinearRegressionModel(df::DataFrame, label::Symbol, features::Symbol)
+    return LinearRegressionModel(df, label, [features], rand(2))
 end
 
 function g(model::LinearRegressionModel, row_n::Int64)
@@ -66,4 +65,8 @@ function predict(model::LinearRegressionModel, xs::Vector{<:Real})
     y = sum(model.argv .* xs)
 
     return y
+end
+
+function predict(model::LinearRegressionModel, x::Real)
+    return predict(model, [x])
 end
