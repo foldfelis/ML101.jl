@@ -22,7 +22,6 @@ end
     fit!(lrm)
 
     @test all(isapprox.(lrm.argv, argv, atol=1e-2))
-
     @test isapprox(
         predict(lrm, [0.1, 0.2, 0.3]),
         sum(argv .* [1, 0.1, 0.2, 0.3]),

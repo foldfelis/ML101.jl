@@ -3,7 +3,7 @@ export
     fit!,
     predict
 
-mutable struct LinearRegressionModel
+struct LinearRegressionModel
     df::DataFrame
     label::Symbol
     features::Vector{Symbol}
@@ -11,12 +11,12 @@ mutable struct LinearRegressionModel
 end
 
 """
-LinearRegressionModel(
-    df::DataFrame,
-    label::Symbol,
-    features::Vector{Symbol};
-    argv::Vector{<:Real}
-)
+    LinearRegressionModel(
+        df::DataFrame,
+        label::Symbol,
+        features::Vector{Symbol};
+        argv::Vector{<:Real}
+    )
 
 A multipal regression model.
 
