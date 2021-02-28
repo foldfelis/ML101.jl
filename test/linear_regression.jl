@@ -8,7 +8,8 @@
     lrm = LinearRegressionModel(df, :Ŷ, [:X₁, :X₂, :X₃], argv=argv)
 
     @test ML101.g(lrm, 1) == sum(argv .* [1, 1, 11, 21])
-    @test ML101.loss(lrm) == 0
+    @test ML101.ĝ(lrm, 1) == sum(argv .* [1, 1, 11, 21])
+    @test isapprox(ML101.loss(lrm), 0, atol=1e-20)
 end
 
 @testset "linear_regression.jl multipal regression" begin

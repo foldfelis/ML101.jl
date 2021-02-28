@@ -66,51 +66,64 @@ function LinearRegressionModel(
     return LinearRegressionModel(df, label, [feature], argv)
 end
 
+# y = g(x) = a + b1 x1 + b2 x2 ...
 function g(model::LinearRegressionModel, row_n::Int64)
     xs = collect(model.df[row_n, model.features])
     pushfirst!(xs, 1)
-    y = sum(model.argv .* xs)
+    y = xs' * model.argv
 
     return y
+end
+
+function ĝ(model::LinearRegressionModel, row_n::Int64)
+    return model.df[row_n, model.label]
 end
 
 function loss(model::LinearRegressionModel)
     n = nrow(model.df)
     l = 0
     for i in 1:n
-        l += (g(model, i) - model.df[i, model.label])^2
+        l += (g(model, i) - ĝ(model, i))^2
     end
 
     return l/n
 end
 
-function fit!(model::LinearRegressionModel; lr=1e-4, atol::Float64=1e-6, show=false)
+function ∇loss(model::LinearRegressionModel)
+    dl_da = 0
+    dl_db = zeros(length(model.features))
+    for i in 1:nrow(model.df)
+        # intercept
+        dl_da += g(model, i) - ĝ(model, i)
+
+        # slopes
+        for (j, f) in enumerate(model.features)
+            dl_db[j] += (g(model, i) - ĝ(model, i)) * model.df[i, f]
+        end
+    end
+
+    # merge to one vector
+    return 2 .* pushfirst!(dl_db, dl_da)
+end
+
+function gradient_descent(model::LinearRegressionModel, ∇loss, η::Real, atol::Real, show=false)
     while (l = loss(model)) > atol
         show && println("Loss: $l")
-        dl_da = 0
-        dl_db = zeros(length(model.features))
-        for i in 1:nrow(model.df)
-            # intersection
-            dl_da += g(model, i) - model.df[i, model.label]
 
-            # sloaps
-            for (j, f) in enumerate(model.features)
-                dl_db[j] += (g(model, i) - model.df[i, model.label]) * model.df[i, f]
-            end
-        end
-
-        # intersection
-        model.argv[1] -= lr * 2 * dl_da
-        # slopes
-        for j in 2:length(model.argv)
-            model.argv[j] -= lr * 2 * dl_db[j-1]
+        dl_vec = ∇loss(model)
+        for i in 1:length(model.argv)
+            model.argv[i] -= η * dl_vec[i]
         end
     end
 end
 
+function fit!(model::LinearRegressionModel; η::Real=1e-4, atol::Real=1e-6, show=false)
+    gradient_descent(model, ∇loss, η, atol, show)
+end
+
 function predict(model::LinearRegressionModel, xs::Vector{<:Real})
     pushfirst!(xs, 1)
-    y = sum(model.argv .* xs)
+    y = xs' * model.argv
 
     return y
 end
