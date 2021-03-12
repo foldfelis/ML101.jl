@@ -45,3 +45,17 @@ function log_likelyhood(model::LogisticRegressionModel)
 
     return ll
 end
+
+function ∇log_likelyhood(model::LogisticRegressionModel)
+    # ∇ll = ∑(yⁱ - σ(zⁱ))xⱼⁱ
+    xs = model.xs
+    y = model.y
+
+    ∇ll = zeros(length(model.argv))
+    for (i, yⁱ) in enumerate(y)
+        xsⁱ = xs[i, :]
+        ∇ll .+= (yⁱ - sigmoid(z(model, xsⁱ))).* xsⁱ
+    end
+
+    return ∇ll
+end
