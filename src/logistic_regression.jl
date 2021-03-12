@@ -14,26 +14,34 @@ function LogisticRegressionModel(df::DataFrame, label::Symbol, features::Vector{
     n = nrow(df)
     y = df[!, label]
     xs = Matrix(df[!, features])
-    β = rand(length(features)+1)
+    β = rand(length(features))
     return LogisticRegressionModel(y, xs, β, n)
 end
 
 function LogisticRegressionModel(df::DataFrame, label::Symbol, feature::Symbol)
     n = nrow(df)
     y = df[!, label]
-    xs = df[!, feature]
-    β = rand(2)
-    return LogisticRegressionModel(y, xs, β, n)
+    x = df[!, feature]
+    β = rand()
+    return LogisticRegressionModel(y, x, β, n)
 end
 
-function sigmoid(z::Real)
-    return 1.0 / (1.0 + exp(-z))
-end
+sigmoid(z::Real) = 1.0 / (1.0 + exp(-z))
 
-function predict(model::LogisticRegressionModel, x::Real)
-    return sigmoid(model.argv * x)[1]
-end
+z(model::LogisticRegressionModel, xs::Vector{<:Real}) = model.argv' * xs
 
-function predict(model::LogisticRegressionModel, xs::Vector{Real})
-    return sigmoid(model.argv' * xs)
+predict(model::LogisticRegressionModel, xs::Vector{<:Real}) = sigmoid(z(model, xs))
+
+function log_likelyhood(model::LogisticRegressionModel)
+    xs = model.xs
+    y = model.y
+
+    ll = 0
+    for (i, yⁱ) in enumerate(y)
+        xsⁱ = xs[i, :]
+        ll += yⁱ * log(sigmoid(z(model, xsⁱ)))
+        ll += (1 - yⁱ) * log(1 - sigmoid(z(model, xsⁱ)))
+    end
+
+    return ll
 end
