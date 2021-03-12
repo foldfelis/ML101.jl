@@ -14,7 +14,7 @@ function LogisticRegressionModel(df::DataFrame, label::Symbol, features::Vector{
     n = nrow(df)
     y = df[!, label]
     xs = Matrix(df[!, features])
-    β = rand(length(features))
+    β = zeros(length(features))
     return LogisticRegressionModel(y, xs, β, n)
 end
 
@@ -22,7 +22,7 @@ function LogisticRegressionModel(df::DataFrame, label::Symbol, feature::Symbol)
     n = nrow(df)
     y = df[!, label]
     x = df[!, feature]
-    β = rand()
+    β = zero(1)
     return LogisticRegressionModel(y, x, β, n)
 end
 
