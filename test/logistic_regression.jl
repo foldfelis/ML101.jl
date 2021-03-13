@@ -1,10 +1,10 @@
 @testset "internal functions" begin
     n = 1000
-    β = [1., 1.]
+    β = [-1., -1.]
     df = DataFrame(
         X₁=vcat(randn(n).-5, randn(n).+10),
         X₂=vcat(randn(n).-8, randn(n).+16),
-        Y=vcat(zeros(n), ones(n))
+        Y=vcat(ones(n), zeros(n))
     )
     lrm = LogisticRegressionModel(df, :Y, [:X₁, :X₂])
     lrm.argv = β
@@ -18,11 +18,11 @@
     @test isapprox(
         ML101.log_likelyhood(lrm),
         (
-            0 * log(ML101.sigmoid(β' * [-5, -8])) +
-            (1-0) * log(1 - ML101.sigmoid(β' * [-5, -8]))
+            1 * log(ML101.sigmoid(β' * [-5, -8])) +
+            (1-1) * log(1 - ML101.sigmoid(β' * [-5, -8]))
         ) + (
-            1 * log(ML101.sigmoid(β' * [10, 16])) +
-            (1-1) * log(1 - ML101.sigmoid(β' * [10, 16]))
+            0 * log(ML101.sigmoid(β' * [10, 16])) +
+            (1-0) * log(1 - ML101.sigmoid(β' * [10, 16]))
         ),
         atol=1e-5
     )
@@ -30,11 +30,11 @@ end
 
 @testset "LogisticRegressionModel" begin
     n = 100
-    β = [0.5, 0.5]
+    β = [1., 1.]
     df = DataFrame(
         X₁=vcat(randn(n).-5, randn(n).+10),
         X₂=vcat(randn(n).-8, randn(n).+16),
-        Y=vcat(zeros(n), ones(n))
+        Y=vcat(ones(n), zeros(n))
     )
     lrm = LogisticRegressionModel(df, :Y, [:X₁, :X₂])
     lrm.argv = β
