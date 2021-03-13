@@ -41,10 +41,4 @@ end
 
     fit!(lrm, η=1e-2, atol=-1e-4)
     @test isapprox(ML101.log_likelyhood(lrm), -1e-4, atol=1e-4)
-
-    # @df df scatter(:X₁ , :X₂, :Y)
-    # x1 = collect(-15:0.1:15)
-    # x2 = collect(-15:0.1:15)
-    # y = ML101.sigmoid.(lrm.argv[1].*x1 .+ lrm.argv[2].*x2)
-    # plot!(x1, x2, y)
 end
