@@ -20,3 +20,4 @@ This repository is not just an implement yet a learning process to fully underst
 ## Models
 
 - [x] Linear regression
+- [x] Logistic regression
