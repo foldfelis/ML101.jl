@@ -22,7 +22,7 @@ function LogisticRegressionModel(df::DataFrame, label::Symbol, feature::Symbol)
     n = nrow(df)
     y = df[!, label]
     x = df[!, feature]
-    β = zero(1)
+    β = zeros(1)
     return LogisticRegressionModel(y, x, β, n)
 end
 
