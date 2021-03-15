@@ -3,131 +3,92 @@ export
     fit!,
     predict
 
-struct LinearRegressionModel
-    df::DataFrame
-    label::Symbol
-    features::Vector{Symbol}
+mutable struct LinearRegressionModel{T, S}
+    y::Vector{T}
+    xs::AbstractArray{S}
     argv::Vector{Float64}
+    n::Integer
 end
 
-"""
-    LinearRegressionModel(
-        df::DataFrame,
-        label::Symbol,
-        features::Vector{Symbol};
-        argv::Vector{<:Real}
-    )
-
-A multipal regression model.
-
-- `df::DataFrame`: DataFrame.
-- `label::Symbol`: Specify a valid column name of `df` as a label.
-- `features::Vector{Symbol}`: Specify some valid column name of `df` as features.
-- `argv::Vector{<:Real}`: Initial arguments.
-"""
 function LinearRegressionModel(
     df::DataFrame,
     label::Symbol,
     features::Vector{Symbol};
-    argv::Vector{<:Real}=rand(length(features)+1)
+    β::Vector{<:Real}=rand(length(features)+1)
 )
-    if length(argv) != length(features) + 1
+    n = nrow(df)
+    y = df[!, label]
+    xs = Matrix(df[!, features])
+    if length(β) != length(features) + 1
         throw(DimensionMismatch("Number of features and arguments mismatch."))
     end
 
-    return LinearRegressionModel(df, label, features, argv)
+    return LinearRegressionModel(y, xs, β, n)
 end
 
-"""
-    LinearRegressionModel(
-        df::DataFrame,
-        label::Symbol,
-        features::Symbol;
-        argv::Vector{<:Real}
-    )
-
-A linear regression model.
-
-- `df::DataFrame`: DataFrame.
-- `label::Symbol`: Specify a valid column name of `df` as a label.
-- `features::Symbol`: Specify a valid column name of `df` as a feature.
-- `argv::Vector{<:Real}`: Initial arguments.
-"""
 function LinearRegressionModel(
     df::DataFrame,
     label::Symbol,
     feature::Symbol;
     argv::Vector{<:Real}=rand(2)
 )
-    if length(argv) != 2
+    n = nrow(df)
+    y = df[!, label]
+    xs = df[!, feature]
+    if length(β) != 2
         throw(DimensionMismatch("Number of features and arguments mismatch."))
     end
 
     return LinearRegressionModel(df, label, [feature], argv)
 end
 
-# y = g(x) = a + b1 x1 + b2 x2 ...
-function g(model::LinearRegressionModel, row_n::Int64)
-    xs = collect(model.df[row_n, model.features])
-    pushfirst!(xs, 1)
-    y = xs' * model.argv
+function predict(model::LinearRegressionModel, xs::Vector{T}) where {T<:Real}
+    xs = hcat(ones(T, size(xs, 1)), xs)
 
-    return y
+    return xs * model.argv
 end
 
-function ĝ(model::LinearRegressionModel, row_n::Int64)
-    return model.df[row_n, model.label]
+function predict(model::LinearRegressionModel, xs::Matrix{T}) where {T<:Real}
+    xs = hcat(ones(T, size(xs, 1)), xs)
+
+    return xs * model.argv
 end
+
+residual(model::LinearRegressionModel, i::Integer) = model.y[i] - predict(model, model.xs[i, :])
+
+residual(model::LinearRegressionModel) = model.y .- predict(model, model.xs)
 
 function loss(model::LinearRegressionModel)
-    n = nrow(model.df)
-    l = 0
-    for i in 1:n
-        l += (g(model, i) - ĝ(model, i))^2
-    end
+    l = sum(x -> 0.5 * x^2, residual(model))
 
-    return l/n
+    return l/model.n
 end
 
-function ∇loss(model::LinearRegressionModel)
-    dl_da = 0
-    dl_db = zeros(length(model.features))
-    for i in 1:nrow(model.df)
-        # intercept
-        dl_da += g(model, i) - ĝ(model, i)
+function ∇L(model::LinearRegressionModel, i)
+    xs = hcat(ones(size(model.xs[i,:], 1)), model.xs[i,:])
 
-        # slopes
-        for (j, f) in enumerate(model.features)
-            dl_db[j] += (g(model, i) - ĝ(model, i)) * model.df[i, f]
-        end
-    end
-
-    # merge to one vector
-    return 2 .* pushfirst!(dl_db, dl_da)
+    return vec(sum(-residual(model) .* xs, dims=1))
 end
 
-function gradient_descent(model::LinearRegressionModel, ∇loss, η::Real, atol::Real, show=false)
+function ∇L(model::LinearRegressionModel)
+    xs = hcat(ones(size(model.xs, 1)), model.xs)
+
+    return vec(sum(-residual(model) .* xs, dims=1))
+end
+
+function fit!(model::LinearRegressionModel; method=gradient_descent, η::Real=1e-4, atol::Real=1e-6, show=false)
+    β = method(model, η, atol, show)
+    model.argv .= β
+
+    return model
+end
+
+function gradient_descent(model::LinearRegressionModel, η::Real=1e-4, atol::Real=1e-6, show::Bool=false)
+    β = model.argv
     while (l = loss(model)) > atol
         show && println("Loss: $l")
-
-        dl_vec = ∇loss(model)
-        for i in 1:length(model.argv)
-            model.argv[i] -= η * dl_vec[i]
-        end
+        β .-= η .* ∇L(model)
     end
-end
 
-function fit!(model::LinearRegressionModel; η::Real=1e-4, atol::Real=1e-6, show=false)
-    gradient_descent(model, ∇loss, η, atol, show)
-end
-
-function predict(model::LinearRegressionModel, xs::Vector{<:Real})
-    pushfirst!(xs, 1)
-    y = xs' * model.argv
-
-    return y
-end
-
-function predict(model::LinearRegressionModel, x::Real)
-    return predict(model, [x])
+    return β
 end
