@@ -11,7 +11,7 @@ begin
 	
 	using Plots
 	using StatsPlots
-	plotly()
+	gr()
 end;
 
 # ╔═╡ 43f669b2-8596-11eb-2e12-efdef4ac0e29
