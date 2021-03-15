@@ -30,33 +30,25 @@ function LinearRegressionModel(
     df::DataFrame,
     label::Symbol,
     feature::Symbol;
-    argv::Vector{<:Real}=rand(2)
+    β::Vector{<:Real}=rand(2)
 )
     n = nrow(df)
     y = df[!, label]
-    xs = df[!, feature]
+    x = Matrix(df[!, [feature]])
     if length(β) != 2
         throw(DimensionMismatch("Number of features and arguments mismatch."))
     end
 
-    return LinearRegressionModel(df, label, [feature], argv)
+    return LinearRegressionModel(y, x, β, n)
 end
 
-function predict(model::LinearRegressionModel, xs::Vector{T}) where {T<:Real}
+function y(model::LinearRegressionModel, xs::Matrix{T}) where {T<:Real}
     xs = hcat(ones(T, size(xs, 1)), xs)
 
     return xs * model.argv
 end
 
-function predict(model::LinearRegressionModel, xs::Matrix{T}) where {T<:Real}
-    xs = hcat(ones(T, size(xs, 1)), xs)
-
-    return xs * model.argv
-end
-
-residual(model::LinearRegressionModel, i::Integer) = model.y[i] - predict(model, model.xs[i, :])
-
-residual(model::LinearRegressionModel) = model.y .- predict(model, model.xs)
+residual(model::LinearRegressionModel) = model.y .- y(model, model.xs)
 
 function loss(model::LinearRegressionModel)
     l = sum(x -> 0.5 * x^2, residual(model))
@@ -64,23 +56,10 @@ function loss(model::LinearRegressionModel)
     return l/model.n
 end
 
-function ∇L(model::LinearRegressionModel, i)
-    xs = hcat(ones(size(model.xs[i,:], 1)), model.xs[i,:])
-
-    return vec(sum(-residual(model) .* xs, dims=1))
-end
-
 function ∇L(model::LinearRegressionModel)
     xs = hcat(ones(size(model.xs, 1)), model.xs)
 
     return vec(sum(-residual(model) .* xs, dims=1))
-end
-
-function fit!(model::LinearRegressionModel; method=gradient_descent, η::Real=1e-4, atol::Real=1e-6, show=false)
-    β = method(model, η, atol, show)
-    model.argv .= β
-
-    return model
 end
 
 function gradient_descent(model::LinearRegressionModel, η::Real=1e-4, atol::Real=1e-6, show::Bool=false)
@@ -91,4 +70,23 @@ function gradient_descent(model::LinearRegressionModel, η::Real=1e-4, atol::Rea
     end
 
     return β
+end
+
+function fit!(model::LinearRegressionModel; method=gradient_descent, η::Real=1e-4, atol::Real=1e-6, show=false)
+    β = method(model, η, atol, show)
+    model.argv .= β
+
+    return model
+end
+
+function predict(model::LinearRegressionModel, xsᵢ::Vector{T}) where {T<:Real}
+    xsᵢ = vcat(ones(T, 1), xsᵢ)'
+
+    return xsᵢ * model.argv
+end
+
+function predict(model::LinearRegressionModel, xsᵢ::T) where {T<:Real}
+    xsᵢ = vcat(ones(T, 1), xsᵢ)'
+
+    return xsᵢ * model.argv
 end
