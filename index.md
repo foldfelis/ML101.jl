@@ -8,4 +8,8 @@
 
 ## Example
 
-[Ice cream vs Whiskey](notebook/ice_cream_vs_whiskey.jl.html)
+**Linear Regression**
+* [Ice cream vs Whiskey](notebook/ice_cream_vs_whiskey.jl.html)
+
+**Logistic Regression**
+* [Does candy contain chocolate](notebook/candy_contain_chocolate.jl.html)
