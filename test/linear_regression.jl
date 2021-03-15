@@ -23,6 +23,13 @@ end
     y = 0.1 .+ 0.3x₁ .+ 0.5x₂ .+ 0.7x₃ .+ ϵ
     df = DataFrame(Y=y, X₁=x₁, X₂=x₂, X₃=x₃)
 
+    @test_throws DimensionMismatch LinearRegressionModel(
+        df,
+        :Y,
+        [:X₁, :X₂, :X₃],
+        β=[1, 2, 3]
+    )
+
     lrm = LinearRegressionModel(df, :Y, [:X₁, :X₂, :X₃])
     fit!(lrm, atol=1e-7)
 
@@ -40,6 +47,13 @@ end
     ϵ = randn(10) * 1e-20
     ŷ = 0.1 .+ 0.3x + ϵ
     df = DataFrame(Ŷ=ŷ, X=x)
+
+    @test_throws DimensionMismatch LinearRegressionModel(
+        df,
+        :Ŷ,
+        :X,
+        β=[1]
+    )
 
     lrm = LinearRegressionModel(df, :Ŷ, :X)
     fit!(lrm, atol=1e-7)
