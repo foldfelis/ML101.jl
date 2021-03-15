@@ -3,7 +3,7 @@ export
     fit!,
     predict
 
-mutable struct LogisticRegressionModel{T,S}
+mutable struct LogisticRegressionModel{T, S}
     y::Vector{T}
     xs::AbstractArray{S}
     argv::Vector{Float64}
