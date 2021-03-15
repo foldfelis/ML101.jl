@@ -12,4 +12,5 @@
 * [Ice cream vs Whiskey](notebook/ice_cream_vs_whiskey.jl.html)
 
 **Logistic Regression**
+* [Demo of logistic regression](notebook/logistic_regression.jl.html)
 * [Does candy contain chocolate](notebook/candy_contain_chocolate.jl.html)
