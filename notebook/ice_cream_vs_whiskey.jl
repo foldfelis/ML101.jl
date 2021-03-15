@@ -147,12 +147,12 @@ Construct two models `ice_cream_temp` and `whiskey_temp` to indicate the relatio
 begin
 	ice_cream_temp = LinearRegressionModel(df, :IceCreamT, :TempIndex)
 	ice_cream_temp.argv = [0.4, 0.4]
-	fit!(ice_cream_temp, lr=1e-7, atol=8e-3)
+	fit!(ice_cream_temp, η=1e-7, atol=8e-3)
 
 	whiskey_temp = LinearRegressionModel(df, :WhiskeyT, :TempIndex)
 	whiskey_temp.argv = [0.45, -0.1]
-	fit!(whiskey_temp, lr=1e-7, atol=6e-3)
-end
+	fit!(whiskey_temp, η=1e-7, atol=6e-3)
+end;
 
 # ╔═╡ a158c064-7560-11eb-3a9c-c77cab156802
 begin
