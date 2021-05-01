@@ -150,8 +150,8 @@ begin
 	fit!(ice_cream_temp, η=1e-7, atol=8e-3)
 
 	whiskey_temp = LinearRegressionModel(df, :WhiskeyT, :TempIndex)
-	whiskey_temp.argv = [0.45, -0.1]
-	fit!(whiskey_temp, η=1e-7, atol=6e-3)
+	whiskey_temp.argv = [0.5, -0.2]
+	fit!(whiskey_temp, η=1e-7, atol=7.74e-3)
 end;
 
 # ╔═╡ a158c064-7560-11eb-3a9c-c77cab156802
@@ -182,6 +182,34 @@ begin
 	)
 end
 
+# ╔═╡ 2b6aeac8-8bcf-11eb-2010-4bd5f3f12be8
+begin
+	@df df[df.IsTempInc, :] scatter(:TempIndex, :IceCreamT, label="Ice Cream")
+	@df df[df.IsTempInc, :] scatter!(:TempIndex, :WhiskeyT, label="Whiskey")
+	plot!(
+		title="Trends getting warmer",
+		xlabel="Temperature Index (arb. unit)",
+		ylabel="Percentage",
+		xlims=(-5e-2, 1+5e-2),
+		size=(650, 400),
+		legend=:topleft
+	)
+end
+
+# ╔═╡ a2dfb97c-8bce-11eb-3dc4-cdde30671bb4
+begin
+	@df df[df.IsTempInc.!=true, :] scatter(:TempIndex, :IceCreamT, label="Ice Cream")
+	@df df[df.IsTempInc.!=true, :] scatter!(:TempIndex, :WhiskeyT, label="Whiskey")
+	plot!(
+		title="Trends getting colder",
+		xlabel="Temperature Index (arb. unit)",
+		ylabel="Percentage",
+		xlims=(-5e-2, 1+5e-2),
+		size=(650, 400),
+		legend=:topleft
+	)
+end
+
 # ╔═╡ Cell order:
 # ╟─62b389c8-755a-11eb-3c5e-0f650123135c
 # ╟─51259b56-7567-11eb-16e3-63b248b060cd
@@ -199,3 +227,5 @@ end
 # ╟─bb762efe-767e-11eb-20a8-d97c4e0c7e60
 # ╠═7a4cc232-7564-11eb-3cfb-b727d76a46f5
 # ╟─a158c064-7560-11eb-3a9c-c77cab156802
+# ╟─2b6aeac8-8bcf-11eb-2010-4bd5f3f12be8
+# ╟─a2dfb97c-8bce-11eb-3dc4-cdde30671bb4
