@@ -47,8 +47,7 @@ $y_k =
 
 # ╔═╡ 5eeee95e-ce21-4681-a834-9b8e30b935e8
 md"
-$\begin{bmatrix} y_0\ ...\ y_{N-1} \end{bmatrix} = 
-\begin{bmatrix} x_0\ ...\ x_{N-1} \end{bmatrix} 
+$\begin{bmatrix} y_0 \\ ... \\ y_{N-1} \end{bmatrix} = 
 \begin{bmatrix} 
 	exp(0) & exp(0) & exp(0) & ... & exp(0) \\ 
 	exp(0) & exp(\frac{-i2\pi}{N}1) & exp(\frac{-i2\pi 2}{N}1) & ... & exp(\frac{-i2\pi (N-1)}{N}1) \\ 
@@ -57,9 +56,10 @@ $\begin{bmatrix} y_0\ ...\ y_{N-1} \end{bmatrix} =
 	exp(0) & exp(\frac{-i2\pi}{N}4) & exp(\frac{-i2\pi 2}{N}4) & ... & exp(\frac{-i2\pi (N-1)}{N}4) \\
 	... \\
 	exp(0) & exp(\frac{-i2\pi}{N}(N-1)) & exp(\frac{-i2\pi 2}{N}(N-1)) & ... & exp(\frac{-i2\pi (N-1)}{N}(N-1))
-\end{bmatrix}_{N \times N}$
+\end{bmatrix}_{N \times N}^T
+\begin{bmatrix} x_0 \\ ... \\ x_{N-1} \end{bmatrix}$
 
-$y = xW_{ComplexFourier}$
+$y = W_{ComplexFourier}^T x$
 "
 
 # ╔═╡ 212ac582-1270-49da-9cd4-078ab695be66
@@ -72,7 +72,7 @@ $x = \begin{bmatrix} x_0\ ...\ x_{N-1} \end{bmatrix}$
 # ╔═╡ 7efa004c-57c4-4b9c-bc74-90252de25218
 begin
 	len = 64
-	x = rand(len)'
+	x = rand(len)
 end;
 
 # ╔═╡ 0d6607c2-0881-40f7-81fd-494d49faa697
@@ -87,7 +87,7 @@ function create_𝐰_fourier(len::Integer)
 		𝐰[n+1, k+1] = exp(-im*2π*k*n/len)
 	end
 	
-	return 𝐰
+	return 𝐰'
 end;
 
 # ╔═╡ 036016cd-e4f5-40f7-96d9-cac8fdbebd01
@@ -101,14 +101,14 @@ $x̂ = Fx$
 begin	
 	# Fourier transform via Fourier weights
 	𝐰 = create_𝐰_fourier(len)
-	x̂ = x * 𝐰
+	x̂ = 𝐰 * x
 	
 	# Fourier transform via fft
 	x̂_fft = fft(x)
 
 	# root-mean-sqrt error between those two
 	ϵ_x̂ = sqrt(sum(abs.(x̂_fft - x̂).^2)/len)
-end;
+end
 
 # ╔═╡ 9d937bef-f325-4299-8c4b-7ae358aeb1c9
 md"
@@ -118,8 +118,8 @@ RMSE: $ϵ_x̂
 # ╔═╡ f65c7059-9c2e-4993-a7e6-32cb9a848f23
 begin
 	plot(title="Spectrum", xlabel="Freq (arb. unit)", ylabel="Amp (arb. unit)")
-	plot!(real(x̂_fft'), label="Fourier weights")
-	plot!(real(x̂'), label="FFT")
+	plot!(real(x̂_fft), label="Fourier weights")
+	plot!(real(x̂), label="FFT")
 end
 
 # ╔═╡ 6e200b44-97fb-43e0-8026-aabef11f4f17
@@ -134,21 +134,21 @@ function create_𝐰¯¹_fourier(len::Integer)
 		𝐰¯¹[n+1, k+1] = exp(im*2π*k*n/len)
 	end
 	
-	return 𝐰¯¹/len
+	return (𝐰¯¹/len)'
 end;
 
 # ╔═╡ ac36e1c5-dade-4b0f-974e-2d261ea260f8
 begin
 	# reconstruct signal via Fourier weights
 	𝐰¯¹ = create_𝐰¯¹_fourier(len)
-	𝑓¯¹x̂ = real(x̂ * 𝐰¯¹)'
+	𝑓¯¹x̂ = real(𝐰¯¹ * x̂)
 	
 	# reconstruct signal via ifft
-	𝑓¯¹x̂_fft = real(ifft(x̂_fft))'
+	𝑓¯¹x̂_fft = real(ifft(x̂_fft))
 	
 	# root-mean-sqrt error between those two
-	ϵ_𝑓¯¹x̂_fft = sqrt(sum(abs.(𝑓¯¹x̂_fft - x').^2)/len)
-	ϵ_𝑓¯¹x̂ = sqrt(sum(abs.(𝑓¯¹x̂ - x').^2)/len)
+	ϵ_𝑓¯¹x̂_fft = sqrt(sum(abs.(𝑓¯¹x̂_fft - x).^2)/len)
+	ϵ_𝑓¯¹x̂ = sqrt(sum(abs.(𝑓¯¹x̂ - x).^2)/len)
 end;
 
 # ╔═╡ 7339df20-651e-42ac-8286-e9696fb72458
@@ -162,7 +162,7 @@ RMSE:
 # ╔═╡ e9c246d8-ae77-4236-8ca0-15de7cced221
 begin
 	plot(title="Signal", xlabel="Time (arb. unit)", ylabel="Amp (arb. unit)", ticks=[], ylims=(0, 3.5))
-	plot!(x' .+2 , label="Original signal")
+	plot!(x .+2 , label="Original signal")
 	plot!(𝑓¯¹x̂ .+ 1, label="Reconstructed signal (Fourier weights)")
 	plot!(𝑓¯¹x̂_fft, label="Reconstructed signal (ifft)")
 end
@@ -171,6 +171,32 @@ end
 md"
 ## Learning the Fourier transform via gradient-descent
 "
+
+# ╔═╡ 1cbd900c-b74b-41c8-a57c-6a6ae644b88c
+# begin
+# 	mutable struct FourierNetG
+# 		𝐰
+# 	end
+	
+# 	(m::FourierNetG)(x) = x * m.𝐰
+		
+# 	loss(m, x, x̂) = sqrt(sum(abs.(x̂ .- m(x)).^2)/len)
+	
+# 	m = FourierNetG(rand(ComplexF64, len, len))
+# 	loss(x, x̂) = loss(m, x, x̂)
+	
+# 	xs = rand(ComplexF64, len, 100)
+# 	train_loader = DataLoader(Xtrain, batchsize=2)
+
+	
+# 	data = ((x, x̂), )
+# 	Flux.@epochs 5000 Flux.train!(loss, params(m), data, Descent(0.01))
+	
+# 	m
+# end
+
+# ╔═╡ 9ef928f0-5577-4507-8fbe-193ce6925716
+# abs(sum(𝐰 - m.𝐰))/length(𝐰)
 
 # ╔═╡ Cell order:
 # ╟─b682a76e-75c6-4e0f-b542-210725501e5b
@@ -192,3 +218,5 @@ md"
 # ╟─7339df20-651e-42ac-8286-e9696fb72458
 # ╠═e9c246d8-ae77-4236-8ca0-15de7cced221
 # ╟─3c03ec6d-8994-4886-9006-3cddbf0ac027
+# ╠═1cbd900c-b74b-41c8-a57c-6a6ae644b88c
+# ╠═9ef928f0-5577-4507-8fbe-193ce6925716
