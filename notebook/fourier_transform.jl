@@ -71,7 +71,7 @@ $x = \begin{bmatrix} x_0 \\ ... \\ x_{N-1} \end{bmatrix}$
 
 # ╔═╡ 7efa004c-57c4-4b9c-bc74-90252de25218
 begin
-	len = 64
+	len = 128
 	x = rand(len)
 end;
 
@@ -118,8 +118,8 @@ RMSE: $ϵ_x̂
 # ╔═╡ f65c7059-9c2e-4993-a7e6-32cb9a848f23
 begin
 	plot(title="Spectrum", xlabel="Freq (arb. unit)", ylabel="Amp (arb. unit)")
-	plot!(real(x̂_fft), label="Fourier weights")
-	plot!(real(x̂), label="FFT")
+	plot!(real(x̂_fft), label="FFT")
+	plot!(real(x̂), label="Fourier weights")
 end
 
 # ╔═╡ 6e200b44-97fb-43e0-8026-aabef11f4f17
@@ -178,28 +178,63 @@ begin
 		𝐰
 	end
 	
-	(m::FourierNetG)(x) = x * m.𝐰
-		
-	loss(m, x, x̂) = sqrt(sum(abs.(x̂ .- m(x)).^2)/len)
+	Flux.@functor FourierNetG
 	
+	(m::FourierNetG)(x) = m.𝐰 * x
+		
+	loss(m, x, x̂) = sqrt(sum(abs2, x̂ .- m(x)) / len)
+end;
+
+# ╔═╡ 895ee250-e3ac-4879-b8ee-f1ba8729adaa
+begin
 	m = FourierNetG(rand(ComplexF64, len, len))
 	loss(x, x̂) = loss(m, x, x̂)
 	
-	xs = rand(ComplexF64, len, 100)
-	ys = 𝐰 * xs
-	train_loader = Flux.Data.DataLoader((xs, ys), batchsize=2, shuffle=true)
-	Flux.@epochs 20 for (x_batch, y_batch) in train_loader
-		@assert size(x_batch) == (len, 2)
-		@assert size(y_batch) == (len, 2)
-
-		Flux.train!(loss, params(m), zip(x_batch, y_batch), Descent(1e-4))
+	xs = rand(ComplexF64, len, 20000)
+	x̂s = 𝐰 * xs
+	data = Flux.Data.DataLoader((xs, x̂s), batchsize=10, shuffle=true)
+	
+	training_loss = []
+	function evel_cb()
+		lossₜ = loss(xs, x̂s)
+		@show(lossₜ)
+		push!(training_loss, lossₜ)
 	end
 	
-	m
+	train_𝐰!(n, η) = Flux.@epochs n Flux.Optimise.train!(
+		loss, 
+		params(m), 
+		data, 
+		Descent(η), 
+		cb=Flux.throttle(evel_cb, 0.1, leading=false, trailing=true)
+	)
+	
+	train_𝐰!(10, 1e-1)
+	train_𝐰!(5, 1e-2)
+	train_𝐰!(5, 1e-3)
+	train_𝐰!(5, 1e-4)
+	train_𝐰!(2, 1e-5)
+	train_𝐰!(2, 1e-6)
+	train_𝐰!(2, 1e-7)
+	train_𝐰!(2, 1e-8)
 end
 
+# ╔═╡ 3c1157bd-9780-429a-9cbf-cd5a18d676da
+plot(training_loss, title="Loss", xlabel="epoch", ylabel="loss", label="training")
+
 # ╔═╡ 9ef928f0-5577-4507-8fbe-193ce6925716
-abs(sum(𝐰 - m.𝐰))/length(𝐰)
+md"
+Weights residual: $(sum(abs, 𝐰 - m.𝐰)/length(𝐰))
+"
+
+# ╔═╡ 04189afa-6cdd-45f4-8eaa-12140bde3ada
+begin
+	x̂_grad = m(x)
+	
+	plot(title="Spectrum", xlabel="Freq (arb. unit)", ylabel="Amp (arb. unit)")
+	plot!(real(x̂_grad), label="Fourier weights by GD")
+	plot!(real(x̂_fft), label="FFT")
+end
 
 # ╔═╡ Cell order:
 # ╟─b682a76e-75c6-4e0f-b542-210725501e5b
@@ -222,4 +257,7 @@ abs(sum(𝐰 - m.𝐰))/length(𝐰)
 # ╠═e9c246d8-ae77-4236-8ca0-15de7cced221
 # ╟─3c03ec6d-8994-4886-9006-3cddbf0ac027
 # ╠═1cbd900c-b74b-41c8-a57c-6a6ae644b88c
-# ╠═9ef928f0-5577-4507-8fbe-193ce6925716
+# ╠═895ee250-e3ac-4879-b8ee-f1ba8729adaa
+# ╠═3c1157bd-9780-429a-9cbf-cd5a18d676da
+# ╟─9ef928f0-5577-4507-8fbe-193ce6925716
+# ╠═04189afa-6cdd-45f4-8eaa-12140bde3ada
