@@ -66,7 +66,7 @@ $y = W_{ComplexFourier}^T x$
 md"
 ## Generate random signal
 
-$x = \begin{bmatrix} x_0\ ...\ x_{N-1} \end{bmatrix}$
+$x = \begin{bmatrix} x_0 \\ ... \\ x_{N-1} \end{bmatrix}$
 "
 
 # ╔═╡ 7efa004c-57c4-4b9c-bc74-90252de25218
@@ -173,30 +173,33 @@ md"
 "
 
 # ╔═╡ 1cbd900c-b74b-41c8-a57c-6a6ae644b88c
-# begin
-# 	mutable struct FourierNetG
-# 		𝐰
-# 	end
+begin
+	mutable struct FourierNetG
+		𝐰
+	end
 	
-# 	(m::FourierNetG)(x) = x * m.𝐰
+	(m::FourierNetG)(x) = x * m.𝐰
 		
-# 	loss(m, x, x̂) = sqrt(sum(abs.(x̂ .- m(x)).^2)/len)
+	loss(m, x, x̂) = sqrt(sum(abs.(x̂ .- m(x)).^2)/len)
 	
-# 	m = FourierNetG(rand(ComplexF64, len, len))
-# 	loss(x, x̂) = loss(m, x, x̂)
+	m = FourierNetG(rand(ComplexF64, len, len))
+	loss(x, x̂) = loss(m, x, x̂)
 	
-# 	xs = rand(ComplexF64, len, 100)
-# 	train_loader = DataLoader(Xtrain, batchsize=2)
+	xs = rand(ComplexF64, len, 100)
+	ys = 𝐰 * xs
+	train_loader = Flux.Data.DataLoader((xs, ys), batchsize=2, shuffle=true)
+	Flux.@epochs 20 for (x_batch, y_batch) in train_loader
+		@assert size(x_batch) == (len, 2)
+		@assert size(y_batch) == (len, 2)
 
+		Flux.train!(loss, params(m), zip(x_batch, y_batch), Descent(1e-4))
+	end
 	
-# 	data = ((x, x̂), )
-# 	Flux.@epochs 5000 Flux.train!(loss, params(m), data, Descent(0.01))
-	
-# 	m
-# end
+	m
+end
 
 # ╔═╡ 9ef928f0-5577-4507-8fbe-193ce6925716
-# abs(sum(𝐰 - m.𝐰))/length(𝐰)
+abs(sum(𝐰 - m.𝐰))/length(𝐰)
 
 # ╔═╡ Cell order:
 # ╟─b682a76e-75c6-4e0f-b542-210725501e5b
