@@ -182,7 +182,7 @@ begin
 	
 	(m::FourierNetG)(x) = m.𝐰 * x
 		
-	loss(m, x, x̂) = sqrt(sum(abs2, x̂ .- m(x)) / len)
+	loss(m, x, x̂) = sum(abs2, x̂ .- m(x)) / len
 end;
 
 # ╔═╡ 895ee250-e3ac-4879-b8ee-f1ba8729adaa
@@ -190,14 +190,13 @@ begin
 	m = FourierNetG(rand(ComplexF64, len, len))
 	loss(x, x̂) = loss(m, x, x̂)
 	
-	xs = rand(ComplexF64, len, 20000)
+	xs = rand(ComplexF64, len, 50000)
 	x̂s = 𝐰 * xs
-	data = Flux.Data.DataLoader((xs, x̂s), batchsize=10, shuffle=true)
+	data = Flux.Data.DataLoader((xs, x̂s), batchsize=15, shuffle=true)
 	
 	training_loss = []
-	function evel_cb()
+	function cb()
 		lossₜ = loss(xs, x̂s)
-		@show(lossₜ)
 		push!(training_loss, lossₜ)
 	end
 	
@@ -206,25 +205,23 @@ begin
 		params(m), 
 		data, 
 		Descent(η), 
-		cb=Flux.throttle(evel_cb, 0.1, leading=false, trailing=true)
+		# cb=Flux.throttle(@show(loss(xs, x̂s)), 1, leading=false, trailing=true)
+		cb=Flux.throttle(cb, 1, leading=false, trailing=true)
 	)
 	
-	train_𝐰!(10, 1e-1)
-	train_𝐰!(5, 1e-2)
-	train_𝐰!(5, 1e-3)
-	train_𝐰!(5, 1e-4)
-	train_𝐰!(2, 1e-5)
-	train_𝐰!(2, 1e-6)
-	train_𝐰!(2, 1e-7)
-	train_𝐰!(2, 1e-8)
+	train_𝐰!(15, 1e-1)
+	train_𝐰!(30, 1e-2)
+	train_𝐰!(20, 1e-3)
 end
 
 # ╔═╡ 3c1157bd-9780-429a-9cbf-cd5a18d676da
-plot(training_loss, title="Loss", xlabel="epoch", ylabel="loss", label="training")
+plot(training_loss, title="Loss", xlabel="time (sec)", ylabel="loss", label="training")
 
 # ╔═╡ 9ef928f0-5577-4507-8fbe-193ce6925716
 md"
-Weights residual: $(sum(abs, 𝐰 - m.𝐰)/length(𝐰))
+Weights' residual: $(sum(abs, 𝐰 - m.𝐰)/length(𝐰))
+
+Weights' RMSE: $(sqrt(sum(abs2, 𝐰 - m.𝐰)/length(𝐰)))
 "
 
 # ╔═╡ 04189afa-6cdd-45f4-8eaa-12140bde3ada
