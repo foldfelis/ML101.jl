@@ -14,3 +14,6 @@
 **Logistic Regression**
 * [Demo of logistic regression](notebook/logistic_regression.jl.html)
 * [Does candy contain chocolate](notebook/candy_contain_chocolate.jl.html)
+
+**Neural Network**
+* [Fourier Net](notebook/fourier_transform.jl.html)
