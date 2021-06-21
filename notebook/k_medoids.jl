@@ -103,9 +103,7 @@ md"
 
 # ╔═╡ 9ce95067-b54f-4a9d-8158-8e25b4a2480f
 function d²(data::DataFrame, p₁_i::Integer, p₂_i::Integer)
-	p₁₂ = Vector(data[p₁_i, 1:4]) - Vector(data[p₂_i, 1:4])
-
-	return p₁₂' * p₁₂
+	return sum(abs.(Vector(data[p₁_i, 1:4]) - Vector(data[p₂_i, 1:4])))
 end
 
 # ╔═╡ f558898f-d426-4a36-baed-fa4dd07cf7b2
@@ -114,8 +112,7 @@ let
 	data_o = hcat(data, [9, -9])
 	
 	function d²(data::Matrix, i::Integer, j::Integer)
-		p12 = data[:, j]-data[:, i]
-		return p12' * p12
+		return sum(abs.(data[:, j]-data[:, i]))
 	end
 	
 	xlim=(-10, 10); ylim=(-10, 10)
