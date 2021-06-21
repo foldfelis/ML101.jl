@@ -96,16 +96,6 @@ md"
 ## Training
 "
 
-# ╔═╡ e6f38859-fd04-4dd6-84f3-991fdc72317d
-md"
-**Square of distance between two points**
-"
-
-# ╔═╡ 9ce95067-b54f-4a9d-8158-8e25b4a2480f
-function d²(data::DataFrame, p₁_i::Integer, p₂_i::Integer)
-	return sum(abs.(Vector(data[p₁_i, 1:4]) - Vector(data[p₂_i, 1:4])))
-end
-
 # ╔═╡ f558898f-d426-4a36-baed-fa4dd07cf7b2
 let
 	data = randn(2, 1000)
@@ -127,16 +117,26 @@ let
 	plot(pd, po, legend=false)
 end
 
+# ╔═╡ e6f38859-fd04-4dd6-84f3-991fdc72317d
+md"
+**Manhattan distance between two points**
+"
+
+# ╔═╡ 9ce95067-b54f-4a9d-8158-8e25b4a2480f
+function d(data::DataFrame, p₁_i::Integer, p₂_i::Integer)
+	return sum(abs.(Vector(data[p₁_i, 1:4]) - Vector(data[p₂_i, 1:4])))
+end
+
 # ╔═╡ 9cf597b7-9ea2-4c5d-b810-83b5d027d758
 begin
     signal = "⚡"
 
     iris[!, :Predict] = zeros(n)
     for _ in 1:100
-        iris[!, :Predict] = map(i->argmin([d²(iris, i, ci) for ci in cs_i]), 1:n)
+        iris[!, :Predict] = map(i->argmin([d(iris, i, ci) for ci in cs_i]), 1:n)
 
 		iris[!, :SumInClassD] = [
-			sum((iris[i, :Predict]==iris[j, :Predict] && d²(iris, i, j)) for j in 1:n)
+			sum((iris[i, :Predict]==iris[j, :Predict] && d(iris, i, j)) for j in 1:n)
 			for i in 1:n
 		]
 		for i in 1:n
