@@ -4,5 +4,6 @@ module ML101
 
     include("linear_regression.jl")
     include("logistic_regression.jl")
+    include("naive_bayes.jl")
 
 end
