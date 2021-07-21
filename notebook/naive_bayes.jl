@@ -108,23 +108,30 @@ $P(\vec{x}|C) = P(w1|C)P(w2|C)P(w3|C)...$
 begin
 	features = unique(vcat(df.SMS...))
 	
+	function calc_tf(words::Vector)
+		tf = Dict([(w, Float64(count(x->x==w, words))) for w in features])
+		
+		n = sum(values(tf))
+		for (k, v) in tf
+			tf[k] = (v == 0) ? 1e-1/n : v/n
+		end
+		
+		return tf
+	end
+	
 	spam_p = nrow(df[df.Label.=="spam", :]) / nrow(df)
-	spam_tf = [count(x->x==w, vcat(df[df.Label.=="spam", :SMS]...)) for w in features]
-	spam_tf = map(x->(x = x==0 ? 1e-1 : x), Float64.(spam_tf)) ./ sum(spam_tf)
+	spam_tf = calc_tf(vcat(df[df.Label.=="spam", :SMS]...))
 	
 	ham_p = nrow(df[df.Label.=="ham", :]) / nrow(df)
-	ham_tf = [count(x->x==w, vcat(df[df.Label.=="ham", :SMS]...)) for w in features]
-	ham_tf = map(x->(x = x==0 ? 1e-1 : x), Float64.(ham_tf)) ./ sum(ham_tf)
+	ham_tf = calc_tf(vcat(df[df.Label.=="ham", :SMS]...))
 end;
 
 # ╔═╡ a3f53b05-f2dd-46af-b573-3c5de2c3f709
 begin
-	function p_x_c(words::Vector, tf::Vector)
+	function p_x_c(words::Vector, tf::Dict)
 		p = 1
-		for (i, f) in enumerate(features)
-			for w in words
-				(w == f) && (p *= tf[i])
-			end
+		for w in words
+			p *= tf[w]
 		end
 		
 		return p
