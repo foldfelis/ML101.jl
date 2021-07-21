@@ -17,13 +17,13 @@ md"
 "
 
 # ╔═╡ c9d86708-8ce9-48dd-8d18-ba04b4c4a22d
-sms2bag(sms::String) = [m.match for m in eachmatch(r"[a-z']+", lowercase(sms))]
+sms2token(sms::String) = [m.match for m in eachmatch(r"[a-z']+", lowercase(sms))]
 
 # ╔═╡ a7b1da07-fa68-44c9-b01d-b6b0196f02b1
 begin
 	df_raw = CSV.read("../data/SMSSpamCollection", DataFrame, header=[:Label, :SMS])
 	df = copy(df_raw) 
-	df[!, :SMS] .= sms2bag.(df.SMS)
+	df[!, :SMS] .= sms2token.(df.SMS)
 	df_raw
 end
 
@@ -119,30 +119,32 @@ begin
 		return tf
 	end
 	
-	spam_p = nrow(df[df.Label.=="spam", :]) / nrow(df)
-	spam_tf = calc_tf(vcat(df[df.Label.=="spam", :SMS]...))
+	spam_df = df[df.Label.=="spam", :]
+	spam_p = nrow(spam_df) / nrow(df)
+	spam_tf = calc_tf(vcat(spam_df.SMS...))
 	
-	ham_p = nrow(df[df.Label.=="ham", :]) / nrow(df)
-	ham_tf = calc_tf(vcat(df[df.Label.=="ham", :SMS]...))
+	ham_df = df[df.Label.=="ham", :]
+	ham_p = nrow(ham_df) / nrow(df)
+	ham_tf = calc_tf(vcat(ham_df.SMS...))
 end;
 
 # ╔═╡ a3f53b05-f2dd-46af-b573-3c5de2c3f709
 begin
-	function p_x_c(words::Vector, tf::Dict)
+	function p_x_c(tokens::Vector, tf::Dict)
 		p = 1
-		for w in words
-			p *= tf[w]
+		for t in tokens
+			p *= tf[t]
 		end
 		
 		return p
 	end
 	
 	function infer(s::String)
-		words = filter(x->x in features, unique(sms2bag(s)))
-		(isempty(words)) && (return 0.5)
+		tokens = filter(x->x in features, unique(sms2token(s)))
+		(isempty(tokens)) && (return 0.5)
 
-		return p_x_c(words, spam_tf)*spam_p / (
-			p_x_c(words, spam_tf)*spam_p + p_x_c(words, ham_tf)*ham_p
+		return p_x_c(tokens, spam_tf)*spam_p / (
+			p_x_c(tokens, spam_tf)*spam_p + p_x_c(tokens, ham_tf)*ham_p
 		)
 	end
 end
