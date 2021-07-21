@@ -24,7 +24,7 @@ begin
 	df_raw = CSV.read("../data/SMSSpamCollection", DataFrame, header=[:Label, :SMS])
 	df = copy(df_raw) 
 	df[!, :SMS] .= sms2bag.(df.SMS)
-	df
+	df_raw
 end
 
 # ╔═╡ 6d356343-6f13-4792-b084-b55aa0af7510
@@ -140,11 +140,22 @@ begin
 	end
 end
 
-# ╔═╡ 60b39235-a767-452e-998a-6f6efa0a7c1e
-sum(infer.(df_raw[df_raw.Label.=="spam", :SMS]))/nrow(df_raw[df_raw.Label.=="spam", :])
+# ╔═╡ f95f4e29-44ec-48ae-8ef3-878c3f88ba4c
+md"
+## Validation
 
-# ╔═╡ dfde8c04-2384-4fac-b81f-6af92e5637b9
-sum(infer.(df_raw[df_raw.Label.=="ham", :SMS]))/nrow(df_raw[df_raw.Label.=="ham", :])
+Is the following message a spam?
+"
+
+# ╔═╡ 60b39235-a767-452e-998a-6f6efa0a7c1e
+infer(
+	"Congratulations! You have won a free launch today~~~"
+)
+
+# ╔═╡ 393e099f-135c-4861-8581-fb5a48066df4
+infer(
+	"I am the most handsome guy around the world!!"
+)
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1003,7 +1014,8 @@ version = "3.5.0+0"
 # ╟─dcb7da4c-5092-4667-845a-af4d3cd7c9d3
 # ╠═f10b2755-70d1-4cfe-a759-17f283bb7cb3
 # ╠═a3f53b05-f2dd-46af-b573-3c5de2c3f709
+# ╟─f95f4e29-44ec-48ae-8ef3-878c3f88ba4c
 # ╠═60b39235-a767-452e-998a-6f6efa0a7c1e
-# ╠═dfde8c04-2384-4fac-b81f-6af92e5637b9
+# ╠═393e099f-135c-4861-8581-fb5a48066df4
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
