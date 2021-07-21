@@ -21,7 +21,8 @@ sms2bag(sms::String) = [m.match for m in eachmatch(r"[a-z']+", lowercase(sms))]
 
 # ╔═╡ a7b1da07-fa68-44c9-b01d-b6b0196f02b1
 begin
-	df = CSV.read("../data/SMSSpamCollection", DataFrame, header=[:Label, :SMS])
+	df_raw = CSV.read("../data/SMSSpamCollection", DataFrame, header=[:Label, :SMS])
+	df = copy(df_raw) 
 	df[!, :SMS] .= sms2bag.(df.SMS)
 	df
 end
@@ -31,14 +32,32 @@ md"
 ## Text mining
 "
 
+# ╔═╡ dada49f4-63e1-43cc-8035-158852d6db8c
+function calc_freq(sms::Vector)
+	freq = Dict([(i, Float64(count(x->x==i, sms))) for i in unique(sms)])
+	total_count = sum(values(freq))
+	for (k, _) in freq
+		freq[k] /= total_count
+	end
+	
+	return freq
+end
+
 # ╔═╡ 112ca24c-2f1b-41ce-9645-2d5f2a1297ff
-calc_freq(sms::Vector) = Dict([(i, count(x->x==i, sms)) for i in unique(sms)])
+function calc_idf(sms::Vector) 
+	idf = calc_freq(sms)
+	for (k, v) in idf
+		idf[k] = log(1/v)
+	end
+	
+	return idf
+end
 
 # ╔═╡ ac757e08-0b19-4aa8-a791-8a677280b12f
-function plot_word_cloud(freq::Dict, top_n::Integer)
+function plot_word_cloud(idf::Dict, top_n::Integer)
 	return wordcloud(
-		[keys(freq)...][1:top_n], 
-		(1 ./ [values(freq)...])[1:top_n],
+		[keys(idf)...][1:top_n], 
+		[values(idf)...][1:top_n],
 		font="LiSong Pro",
 		mask=shape(box, 400*2, 300*2, 10*2),
 		colors=:Dark2_3,
@@ -50,16 +69,82 @@ end
 # ╔═╡ 0b173585-640f-4687-a42a-980142fd7aea
 begin
 	hem_sms = vcat(df[df.Label.=="ham", :SMS]...)
-	hem_freq = calc_freq(hem_sms)
+	hem_idf = calc_idf(hem_sms)
 	spam_sms = vcat(df[df.Label.=="spam", :SMS]...)
-	spam_freq = calc_freq(spam_sms)
+	spam_idf = calc_idf(spam_sms)
 end;
 
+# ╔═╡ 7f30886f-32e3-498c-8166-ea5f18b5e725
+md"
+### Non-spam word cloud
+"
+
 # ╔═╡ d9127fa7-e83d-4c21-a2d0-9fa497e1af44
-plot_word_cloud(hem_freq, 200)
+plot_word_cloud(hem_idf, 200)
+
+# ╔═╡ 1fca2c23-5ff9-42cc-a5fa-a872d4cf0cab
+md"
+### Spam word cloud
+"
 
 # ╔═╡ b4d6a0ed-8e41-44d1-b736-e3acc1cd511e
-plot_word_cloud(spam_freq, 200)
+plot_word_cloud(spam_idf, 200)
+
+# ╔═╡ e7997329-45fa-42cb-8d6b-399089099110
+md"
+## Model
+"
+
+# ╔═╡ dcb7da4c-5092-4667-845a-af4d3cd7c9d3
+md"
+$P(Cs|\vec{x}) = \frac{P(\vec{x}|Cs) P(Cs)}{P(\vec{x})}$
+
+$P(Cs|\vec{x}) = \frac{P(\vec{x}|Cs) P(Cs)}{P(\vec{x}|Cs)P(Cs) + P(\vec{x}|Ch)P(Ch)}$
+
+$P(\vec{x}|C) = P(w1|C)P(w2|C)P(w3|C)...$
+"
+
+# ╔═╡ f10b2755-70d1-4cfe-a759-17f283bb7cb3
+begin
+	features = unique(vcat(df.SMS...))
+	
+	spam_p = nrow(df[df.Label.=="spam", :]) / nrow(df)
+	spam_tf = [count(x->x==w, vcat(df[df.Label.=="spam", :SMS]...)) for w in features]
+	spam_tf = map(x->(x = x==0 ? 1e-1 : x), Float64.(spam_tf)) ./ sum(spam_tf)
+	
+	ham_p = nrow(df[df.Label.=="ham", :]) / nrow(df)
+	ham_tf = [count(x->x==w, vcat(df[df.Label.=="ham", :SMS]...)) for w in features]
+	ham_tf = map(x->(x = x==0 ? 1e-1 : x), Float64.(ham_tf)) ./ sum(ham_tf)
+end;
+
+# ╔═╡ a3f53b05-f2dd-46af-b573-3c5de2c3f709
+begin
+	function p_x_c(words::Vector, tf::Vector)
+		p = 1
+		for (i, f) in enumerate(features)
+			for w in words
+				(w == f) && (p *= tf[i])
+			end
+		end
+		
+		return p
+	end
+	
+	function infer(s::String)
+		words = filter(x->x in features, unique(sms2bag(s)))
+		(isempty(words)) && (return 0.5)
+
+		return p_x_c(words, spam_tf)*spam_p / (
+			p_x_c(words, spam_tf)*spam_p + p_x_c(words, ham_tf)*ham_p
+		)
+	end
+end
+
+# ╔═╡ 60b39235-a767-452e-998a-6f6efa0a7c1e
+sum(infer.(df_raw[df_raw.Label.=="spam", :SMS]))/nrow(df_raw[df_raw.Label.=="spam", :])
+
+# ╔═╡ dfde8c04-2384-4fac-b81f-6af92e5637b9
+sum(infer.(df_raw[df_raw.Label.=="ham", :SMS]))/nrow(df_raw[df_raw.Label.=="ham", :])
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -906,10 +991,19 @@ version = "3.5.0+0"
 # ╠═c9d86708-8ce9-48dd-8d18-ba04b4c4a22d
 # ╠═a7b1da07-fa68-44c9-b01d-b6b0196f02b1
 # ╟─6d356343-6f13-4792-b084-b55aa0af7510
+# ╠═dada49f4-63e1-43cc-8035-158852d6db8c
 # ╠═112ca24c-2f1b-41ce-9645-2d5f2a1297ff
 # ╠═ac757e08-0b19-4aa8-a791-8a677280b12f
 # ╠═0b173585-640f-4687-a42a-980142fd7aea
+# ╟─7f30886f-32e3-498c-8166-ea5f18b5e725
 # ╠═d9127fa7-e83d-4c21-a2d0-9fa497e1af44
+# ╟─1fca2c23-5ff9-42cc-a5fa-a872d4cf0cab
 # ╠═b4d6a0ed-8e41-44d1-b736-e3acc1cd511e
+# ╟─e7997329-45fa-42cb-8d6b-399089099110
+# ╟─dcb7da4c-5092-4667-845a-af4d3cd7c9d3
+# ╠═f10b2755-70d1-4cfe-a759-17f283bb7cb3
+# ╠═a3f53b05-f2dd-46af-b573-3c5de2c3f709
+# ╠═60b39235-a767-452e-998a-6f6efa0a7c1e
+# ╠═dfde8c04-2384-4fac-b81f-6af92e5637b9
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
