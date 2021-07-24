@@ -29,7 +29,8 @@ begin
 	spam_df = df[df.Label.=="spam", :]
 	ham_df = df[df.Label.=="ham", :]
 	
-	df_raw
+	# df_raw
+	df
 end
 
 # ╔═╡ 6d356343-6f13-4792-b084-b55aa0af7510
@@ -119,7 +120,7 @@ begin
 	end
 	
 	function infer(s::String)
-		tokens = filter(x->x in features, unique(sms2token(s)))
+		tokens = filter(x->x in features, sms2token(s))
 		(isempty(tokens)) && (return 0.5)
 
 		return p_x_c(tokens, spam_tf)*spam_p / (
