@@ -1,3 +1,5 @@
+using DataFrames
+
 export
     LinearRegressionModel,
     fit!,
