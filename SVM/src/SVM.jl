@@ -1,0 +1,5 @@
+module SVM
+    using Pluto
+
+    run_notebook() = Pluto.run(notebook=joinpath(@__DIR__, "../notebook/svm.jl"))
+end
