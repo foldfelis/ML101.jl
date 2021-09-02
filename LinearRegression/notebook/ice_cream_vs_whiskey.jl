@@ -1,18 +1,19 @@
 ### A Pluto.jl notebook ###
-# v0.12.21
+# v0.15.1
 
 using Markdown
 using InteractiveUtils
 
 # ╔═╡ 51259b56-7567-11eb-16e3-63b248b060cd
 begin
+    using Pkg; Pkg.develop(path=".."); Pkg.activate("..")
 	using PlutoUI
 	LocalResource("./assets/ice_cream_vs_whiskey.png")
 end
 
 # ╔═╡ abde3380-750f-11eb-119b-5dc493c19b15
 begin
-	using ML101
+	using LinearRegression
 	using CSV
 	using DataFrames
 	using Dates
