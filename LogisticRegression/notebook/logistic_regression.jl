@@ -1,14 +1,17 @@
 ### A Pluto.jl notebook ###
-# v0.12.21
+# v0.15.1
 
 using Markdown
 using InteractiveUtils
 
+# ╔═╡ c2d0d93c-8d12-4b58-852b-10795ff1f8db
+using Pkg; Pkg.develop(path=".."); Pkg.activate("..")
+
 # ╔═╡ c74a1698-83dd-11eb-1bd2-c145ea201500
-begin 
+begin
 	using DataFrames
-	using ML101
-	
+	using LogisticRegression
+
 	using Plots
 	using StatsPlots
 	gr()
@@ -54,7 +57,7 @@ begin
 		RGBA(240/255, 240/255, 240/255, 1),
 		RGBA(219/255, 64/255, 68/255, 1)
 	])
-	
+
 	function plot_model(model::LogisticRegressionModel, df::DataFrame; margin=3)
 		lim = maximum(abs.(lrm.xs))
 		x = -lim-margin:0.1:lim+margin
@@ -98,6 +101,7 @@ plot_model(lrm, df)
 
 # ╔═╡ Cell order:
 # ╟─43f669b2-8596-11eb-2e12-efdef4ac0e29
+# ╟─c2d0d93c-8d12-4b58-852b-10795ff1f8db
 # ╠═c74a1698-83dd-11eb-1bd2-c145ea201500
 # ╟─135d298a-83de-11eb-1f50-83e4261f2bdf
 # ╠═f374b00a-83dd-11eb-0f93-612e3ed66e75
