@@ -1,20 +1,21 @@
 ### A Pluto.jl notebook ###
-# v0.12.21
+# v0.15.1
 
 using Markdown
 using InteractiveUtils
 
 # ╔═╡ 5ebb8c30-857f-11eb-2992-296c7a001aa8
 begin
+    using Pkg; Pkg.develop(path=".."); Pkg.activate("..")
 	using PlutoUI
 	PlutoUI.LocalResource("assets/candy.jpg")
 end
 
 # ╔═╡ ff0eaff8-857c-11eb-1945-b1541856ca36
-begin 
+begin
 	using DataFrames
 	using CSV
-	using ML101
+	using LogisticRegression
 end
 
 # ╔═╡ cb4211fc-857b-11eb-11fe-f113a59585fc
@@ -59,11 +60,11 @@ md"
 # ╔═╡ 48af712a-8581-11eb-25ce-9bf4b270a426
 begin
 	features = [
-		:fruity, 
-		:caramel, 
+		:fruity,
+		:caramel,
 		:peanutyalmondy,
-		:nougat, 
-		:crispedricewafer, 
+		:nougat,
+		:crispedricewafer,
 		:hard,
 		:bar,
 		:pluribus,
