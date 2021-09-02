@@ -1,8 +1,11 @@
 ### A Pluto.jl notebook ###
-# v0.14.5
+# v0.15.1
 
 using Markdown
 using InteractiveUtils
+
+# ╔═╡ 9daa72fd-1145-4733-a21e-bd209367380a
+using Pkg; Pkg.develop(path=".."); Pkg.activate("..")
 
 # ╔═╡ 947fbdc9-3c48-44f3-b4d3-183f70e2194e
 using LinearAlgebra
@@ -37,6 +40,7 @@ end
 irls(𝐱, y, p=4, n_iter=10)
 
 # ╔═╡ Cell order:
+# ╟─9daa72fd-1145-4733-a21e-bd209367380a
 # ╠═947fbdc9-3c48-44f3-b4d3-183f70e2194e
 # ╠═a465636e-bc12-4e8f-9db2-1a20ea771504
 # ╠═833c56c2-d2ab-4f94-968b-b5771c9fa945
