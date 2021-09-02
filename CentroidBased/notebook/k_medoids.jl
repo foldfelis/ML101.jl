@@ -1,8 +1,11 @@
 ### A Pluto.jl notebook ###
-# v0.14.8
+# v0.15.1
 
 using Markdown
 using InteractiveUtils
+
+# ╔═╡ 7a206e18-4562-469d-b580-f2d0cc2f80df
+using Pkg; Pkg.develop(path=".."); Pkg.activate("..")
 
 # ╔═╡ 7c28cf4c-cd0c-11eb-0507-b10f2a883e8c
 begin
@@ -100,17 +103,17 @@ md"
 let
 	data = randn(2, 1000)
 	data_o = hcat(data, [9, -9])
-	
+
 	function d²(data::Matrix, i::Integer, j::Integer)
 		return sum(abs.(data[:, j]-data[:, i]))
 	end
-	
+
 	xlim=(-10, 10); ylim=(-10, 10)
-	
+
 	pd = scatter(data[1, :], data[2, :], xlim=xlim, ylim=ylim)
 	id = argmin([sum(d²(data, i, j) for j in 1:1000) for i in 1:1000])
 	scatter!(pd, [data[1, id]], [data[2, id]])
-	
+
 	po = scatter(data_o[1, :], data_o[2, :], xlim=xlim, ylim=ylim)
 	io = argmin([sum(d²(data_o, i, j) for j in 1:1000) for i in 1:1000])
 	scatter!(po, [data_o[1, io]], [data_o[2, io]])
@@ -179,6 +182,7 @@ end
 
 # ╔═╡ Cell order:
 # ╟─93477f7b-aef4-44e5-ba3b-8285a6261500
+# ╟─7a206e18-4562-469d-b580-f2d0cc2f80df
 # ╠═7c28cf4c-cd0c-11eb-0507-b10f2a883e8c
 # ╟─64f0d05d-9c4e-4935-bf33-a5ee5835f99a
 # ╠═7f59bdb6-c6de-4a25-9ff0-8a81457a4242

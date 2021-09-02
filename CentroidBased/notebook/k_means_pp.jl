@@ -1,8 +1,11 @@
 ### A Pluto.jl notebook ###
-# v0.14.8
+# v0.15.1
 
 using Markdown
 using InteractiveUtils
+
+# ╔═╡ f81b2c54-c541-41db-bdd2-fc9d7caa354c
+using Pkg; Pkg.develop(path=".."); Pkg.activate("..")
 
 # ╔═╡ 7c28cf4c-cd0c-11eb-0507-b10f2a883e8c
 begin
@@ -202,6 +205,7 @@ end
 
 # ╔═╡ Cell order:
 # ╟─93477f7b-aef4-44e5-ba3b-8285a6261500
+# ╟─f81b2c54-c541-41db-bdd2-fc9d7caa354c
 # ╠═7c28cf4c-cd0c-11eb-0507-b10f2a883e8c
 # ╟─64f0d05d-9c4e-4935-bf33-a5ee5835f99a
 # ╠═7f59bdb6-c6de-4a25-9ff0-8a81457a4242
