@@ -13,6 +13,7 @@ end
 
 # ╔═╡ abde3380-750f-11eb-119b-5dc493c19b15
 begin
+	using LinearRegression
 	using CSV
 	using DataFrames
 	using Dates
