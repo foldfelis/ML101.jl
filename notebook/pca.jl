@@ -80,7 +80,7 @@ end
 md"
 ### 2. SVD
 
-$M = U \Sigma V^\dagger$
+$X = U \Sigma V^\dagger$
 "
 
 # ╔═╡ 6b6365a7-486a-4533-bd1e-d6c5726f3b35
@@ -121,7 +121,7 @@ begin
 	data[!, 2:3] .= (u' * Matrix(data[!, 2:3])')'
 	@df data scatter(
 		:height, :shoe_size, group=:sex, 
-		xlabel="height", ylabel="shoe size",
+		xlabel="pc1", ylabel="pc2",
 		legend=:topleft,
 		xlim=(-40, 40), ylim=(-40, 40)
 	)
@@ -139,7 +139,6 @@ begin
 	data[!, 2:3] .= (inv(diagm(s)) * Matrix(data[!, 2:3])')'
 	@df data scatter(
 		:height, :shoe_size, group=:sex, 
-		xlabel="height", ylabel="shoe size",
 		xlim=(-0.5, 0.5), ylim=(-0.5, 0.5)
 	)
 end
@@ -1437,7 +1436,7 @@ version = "0.9.1+5"
 # ╟─033440c0-efc2-42c4-918a-e0d966e27d3f
 # ╟─b3647ffa-d904-4bee-9327-6dec393702e5
 # ╟─4f771fd7-84be-43f9-a9b2-78d40db4f91c
-# ╠═6b6365a7-486a-4533-bd1e-d6c5726f3b35
+# ╟─6b6365a7-486a-4533-bd1e-d6c5726f3b35
 # ╟─ddfc6838-cf88-4aa2-a95c-5d4c95a487ae
 # ╟─66806d5b-55b7-4a4f-b592-2fe6304a7795
 # ╟─de3026a5-109e-458c-9e38-8e6ab43a81c6
