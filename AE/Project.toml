@@ -12,6 +12,7 @@ Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"
 GZip = "92fee26a-97fe-5a0c-ad85-20a5f3185b63"
 JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
 Pluto = "c3e4b0f8-55cb-11ea-2926-15256bba5781"
+TSne = "24678dba-d5e9-5843-a4c6-250288b04835"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
