@@ -5,9 +5,15 @@ using Flux
 using CUDA
 using JLD2
 
+function get_test_data_and_label()
+    test_x, test_y  = MNIST.testdata(Float32)
+
+    return test_x,  test_y
+end
+
 function get_data(batch_size)
-    train_x, train_y = MNIST.traindata(Float32)
-    test_x,  test_y  = MNIST.testdata(Float32)
+    train_x, _ = MNIST.traindata(Float32)
+    test_x, _ = MNIST.testdata(Float32)
 
     return (
         Flux.DataLoader((train_x, train_x), batchsize=batch_size, shuffle=true),
